@@ -4,7 +4,7 @@ This is an initial description and the implementation of research published at I
 
 Reference paper: 
 D. Sweidan (2024). "Correlated, Yet Independent: A Correlation Based Feature Selection Algorithm". 
-The IEEE Conference on Intelligent Methods, Systems, and Applications (IMSA2024), July 13-14, 2024, Cairo, Egypt.
+In proceeding: The IEEE Conference on Intelligent Methods, Systems, and Applications (IMSA2024), July 13-14, 2024, Cairo, Egypt.
 
 The project is about providing a low-complexity algorithm that can be used to select target-influential and nonredundant features from numeric and large-scale datasets.
 The algorithm relies on the correlation matrix of features and the target, and is comprised of two main stages that are performed in Cross-Validation:

@@ -1,6 +1,6 @@
 # CorrYiFeatureSelection
 
-This is an initial description and the implementation of research published at IMSA2024.
+This is a description of the implementation of research published at IMSA2024.
 
 Reference paper: 
 D. Sweidan (2024). "Correlated, Yet Independent: A Correlation Based Feature Selection Algorithm". 

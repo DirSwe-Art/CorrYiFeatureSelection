@@ -9,7 +9,11 @@ from collections import Counter
 from itertools import combinations
 from sklearn.model_selection 	import	StratifiedKFold
 
-def CorrYiFS(X_df, corr_method='pearson', theta_2=0.68, column_names=None):
+def CorrYiFS(X_df, corr_method, theta_2, column_names):
+	''' 
+ 	This function extracts features based on correlation analysis from a given data frame without Cross-Validation.
+ 	It is called by the main function CorrYiFSCV to extract the features from each Cross-Validation fold.
+ 	'''
 	T_name   		= X_df.columns[-1]
 	R1	  			= X_df.corr(method=corr_method)
 
@@ -42,6 +46,36 @@ def CorrYiFS(X_df, corr_method='pearson', theta_2=0.68, column_names=None):
 	return S
 
 def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=None):
+	""" 
+ 	This is the main function. First, it preprocesses the given data and prepares the Cross-Validation settings, consequently extracting the features without the CV or iterating over the splits. 
+ 	It calls the above CorrYiFS function to extract the features from each split. It selects the common features among all iterations.
+
+      	The parameters are the following:
+       
+	X: Array of shape [n_samples, n_features]
+             The input samples.
+	     *** We think of including y as the target vector in future improvements ***
+      
+	cv: Determines whether to use Cross-Validation with a splitting strategy or not. 
+  	Possible inputs for the cv are:
+   	* 0, to select features without Cross-Validation.
+    	* None, to use the default 5-fold cross-validation.
+     	* integer, to specify the number of folds.
+      	* CV splitter, to use a given Cross-Validation object.
+       	* An iterable yielding a tuple (train, test) splits as arrays of indices.
+ 	For integer or None inputs, if the target is binary or multiclass, StratifiedKFold is used, otherwise, stratification is not used.
+
+  	corr_method: Determines the method for computing the correlations between variables.
+   	Possible inputs include:
+    	*' pearson'
+     	* 'spearman'
+
+      	Theta_2: The threshold used to determine a highly correlated pair of variables. The default value is 0.68 according to Taylor (2000).
+       	This parameter is tunable. However, values range between 0.65 and 1.00.
+	*** We think of including a tuning function as a future improvements ***
+
+ 	column_names: is a vector of strings that determines the feature names. The default is None as feature names should be given when the input data format is a DataFrame. If the input is a Numpy array, the names are generated as follows ['Column_0', 'Column_1', ..., 'Column_(m-1)'] where n is X.shape[1]
+ 	"""
 	# Convert input data into a DataFrame format
 	if isinstance(X, pd.DataFrame):
 		df = X.copy()

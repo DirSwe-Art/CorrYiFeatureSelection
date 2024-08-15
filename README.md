@@ -18,8 +18,6 @@ After the cross-validation process is finished, the algorithm returns the only c
 To support the research community, the repository will include detailed documentation and examples to help users understand and apply the algorithm. 
 The algorithm is coded and tested and will be uploaded soon. It could be modified over time, therefore, we encourage others to use and extend our work.
 
-The following step before uploading the code is to generate a license.
-
 ***********************
 The author.
 ***********************

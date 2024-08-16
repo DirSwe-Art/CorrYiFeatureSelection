@@ -109,28 +109,34 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	# With an integer: Set the number of splits
 	elif isinstance(cv, int):
 		if np.issubdtype(np.array(set(X_df[target_name])).dtype, np.integer):	# Discrete target: startified k-fold
-			cv = StratifiedKFold(n_splits=cv, shuffle=True, random_state=42)
+			cv = StratifiedKFold(n_splits=cv)
 			splits = cv.split(X_df, X_df[target_name])
+			k = cv.get_n_splits()
 		else:
-			cv = StratifiedKFold(n_splits=cv, shuffle=True, random_state=42)
+			cv = StratifiedKFold(n_splits=cv)
 			splits = cv.split(X_df, X_df[target_name])
+			k = cv.get_n_splits()
 	
 	# With None: Default Cross-Validation k=5	
 	elif not cv:
 		if np.issubdtype(np.array(set(X_df[target_name])).dtype, np.integer):	# Discrete target: startified k-fold
-			cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+			cv = StratifiedKFold(n_splits=5)
 			splits = cv.split(X_df, X_df[target_name])
+			k = 5
 		else:
-			cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+			cv = StratifiedKFold(n_splits=5)
 			splits = cv.split(X_df, X_df[target_name])
+			k = 5
 	
 	# With an iterable tuple: Splits are predefined
 	elif isinstance(cv, tuple):
 		splits = cv
+		k = len(cv)
 	
 	# With a CV_Splitter: Use the given CV_Splitter	
 	else:
 		splits = cv.split(X_df, X_df[target_name])
+		k = cv.get_n_splits()
 		
 	
 	S_val					= []
@@ -140,7 +146,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 		S_val.append(S_fold)	
 
 	S_val = np.array([f for S_fold in S_val for f in S_fold])
-	S = [cmn[0] for cmn in Counter(S_val).most_common() if cmn[1] == cv.get_n_splits()]
+	S = [cmn[0] for cmn in Counter(S_val).most_common() if cmn[1] == k]
 
 	if not S:
 		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=column_names)

@@ -77,18 +77,19 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
  	column_names: is a vector of strings that determines the feature names. The default is None as feature names should be given when the input data format is a DataFrame. If the input is a Numpy array, the names are generated as follows ['Column_0', 'Column_1', ..., 'Column_(m-1)'] where n is X.shape[1]
  	"""
 	# Convert input data into a DataFrame format
+
 	if isinstance(X, pd.DataFrame):
 		df = X.copy()
 		if column_names is not None:
-			df.columns = column_names
+			F = df.columns
 	elif not isinstance(X, np.ndarray):
 		if column_names is None:
-			column_names = [f'Column_{i+1}' for i in range(X.shape[1])]
-		df = pd.DataFrame(np.array(X), columns=column_names)
+			F = [f'Column_{i+1}' for i in range(X.shape[1])]
+		df = pd.DataFrame(np.array(X), columns=F)
 
 	# Drop columns having a single value
 	X_df    		= df.loc[:, df.nunique() > 1].copy()
-	column_names	= X_df.columns
+	F				= X_df.columns
 	dropped_cols  	= set(df.columns) - set(X_df.columns)
 	if dropped_cols:
 		print(f'\nWarning!\nThe following columns have a \
@@ -100,7 +101,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	
 	# Without Cross-Validation
 	if cv == 0:		
-		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=column_names)
+		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
 		print("Optimal features %d" % len(S))
 		for f in S:
 			print(f)
@@ -142,14 +143,15 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	S_val					= []
 	for train_index, _ in splits:
 		X_df_fold = X_df.iloc[train_index]
-		S_fold    = CorrYiFS(X_df_fold, corr_method=corr_method, theta_2=theta_2, column_names=column_names)
+		S_fold    = CorrYiFS(X_df_fold, corr_method=corr_method, theta_2=theta_2, column_names=F)
 		S_val.append(S_fold)	
 
 	S_val = np.array([f for S_fold in S_val for f in S_fold])
+	#S     = [ fi for fi in F if sum([ 1 for fj in S_val if fi==fj])==k ]
 	S = [cmn[0] for cmn in Counter(S_val).most_common() if cmn[1] == k]
 
 	if not S:
-		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=column_names)
+		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
 	
 	print("Optimal features %d" % len(S))
 	for f in S:

@@ -9,7 +9,7 @@ from collections import Counter
 from itertools import combinations
 from sklearn.model_selection 	import	StratifiedKFold
 
-def CorrYiFS(X_df, corr_method, theta_2, column_names):
+def selectFeatures(X_df, corr_method, theta_2, column_names):
 	''' 
  	This function extracts features based on correlation analysis from a given data frame without Cross-Validation.
  	It is called by the main function CorrYiFSCV to extract the features from each Cross-Validation fold.
@@ -101,7 +101,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	
 	# Without Cross-Validation
 	if cv == 0:		
-		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
+		S = selectFeatures(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
 		print("Optimal features %d" % len(S))
 		for f in S:
 			print(f)
@@ -143,7 +143,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	S_val					= []
 	for train_index, _ in splits:
 		X_df_fold = X_df.iloc[train_index]
-		S_fold    = CorrYiFS(X_df_fold, corr_method=corr_method, theta_2=theta_2, column_names=F)
+		S_fold    = selectFeatures(X_df_fold, corr_method=corr_method, theta_2=theta_2, column_names=F)
 		S_val.append(S_fold)	
 
 	S_val = np.array([f for S_fold in S_val for f in S_fold])
@@ -151,7 +151,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	S = [cmn[0] for cmn in Counter(S_val).most_common() if cmn[1] == k]
 
 	if not S:
-		S = CorrYiFS(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
+		S = selectFeatures(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
 	
 	print("Optimal features %d" % len(S))
 	for f in S:

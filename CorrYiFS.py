@@ -48,7 +48,7 @@ def selectFeatures(X_df, corr_method, theta_2, column_names):
 def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=None):
 	""" 
  	This is the main function. First, it preprocesses the given data and prepares the Cross-Validation settings, consequently extracting the features without the CV or iterating over the splits. 
- 	It calls the above CorrYiFS function to extract the features from each split. It selects the common features among all iterations.
+ 	It calls the above selectFeatures function to extract the features from each split. It selects the common features among all iterations.
 
       	The parameters are the following:
        

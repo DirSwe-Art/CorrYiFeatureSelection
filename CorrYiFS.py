@@ -11,8 +11,8 @@ from sklearn.model_selection 	import	StratifiedKFold
 
 def selectFeatures(X_df, corr_method, theta_2, column_names):
 	''' 
- 	This function extracts features based on correlation analysis from a given data frame without Cross-Validation.
- 	It is called by the main function CorrYiFSCV to extract the features from each Cross-Validation fold.
+ 	This function extracts features based on correlation analysis from a given data frame without involving Cross-Validation.
+ 	It is called by the main function CorrYiFSCV to iterate and extract features from each CV's fold.
  	'''
 	T_name   		= X_df.columns[-1]
 	R1	  			= X_df.corr(method=corr_method)
@@ -20,7 +20,7 @@ def selectFeatures(X_df, corr_method, theta_2, column_names):
 	R1_TF_corr_abs  = np.abs(R1[T_name][:-1])
 	theta_1     	= np.mean(R1_TF_corr_abs)
 	
-	# Exclude columns having high correlations with target
+	# Exclude columns having high correlations with the target
 	F1   			= [X_df.columns[i] for i, v in enumerate(R1_TF_corr_abs) if abs(v) <= theta_1]
 	R1 				= R1.drop(index=F1, columns=F1)
 	
@@ -47,7 +47,7 @@ def selectFeatures(X_df, corr_method, theta_2, column_names):
 
 def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=None):
 	""" 
- 	This is the main function. First, it preprocesses the given data and prepares the Cross-Validation settings, consequently extracting the features without the CV or iterating over the splits. 
+ 	This is the main function. First, it preprocesses the given data and prepares the Cross-Validation settings, extracting the features without the CV or iterating over the splits. 
  	It calls the above selectFeatures function to extract the features from each split. It selects the common features among all iterations.
 
       	The parameters are the following:
@@ -57,7 +57,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	     *** We think of including y as the target vector in future improvements ***
       
 	cv: Determines whether to use Cross-Validation with a splitting strategy or not. 
-  	Possible inputs for the cv are:
+  	Possible inputs for the CV are:
    	* 0, to select features without Cross-Validation.
     	* None, to use the default 5-fold cross-validation.
      	* integer, to specify the number of folds.
@@ -72,7 +72,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 
       	Theta_2: The threshold used to determine a highly correlated pair of variables. The default value is 0.68 according to Taylor (2000).
        	This parameter is tunable. However, values range between 0.65 and 1.00.
-	*** We think of including a tuning function as a future improvements ***
+	*** We think of including a tuning function as a future improvement ***
 
  	column_names: is a vector of strings that determines the feature names. The default is None as feature names should be given when the input data format is a DataFrame. If the input is a Numpy array, the names are generated as follows ['Column_0', 'Column_1', ..., 'Column_(m-1)'] where n is X.shape[1]
  	"""
@@ -109,7 +109,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	
 	# With an integer: Set the number of splits
 	elif isinstance(cv, int):
-		if np.issubdtype(np.array(set(X_df[target_name])).dtype, np.integer):	# Discrete target: startified k-fold
+		if np.issubdtype(np.array(set(X_df[target_name])).dtype, np.integer):	# Discrete target: stratified k-fold
 			cv = StratifiedKFold(n_splits=cv)
 			splits = cv.split(X_df, X_df[target_name])
 			k = cv.get_n_splits()
@@ -120,7 +120,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	
 	# With None: Default Cross-Validation k=5	
 	elif not cv:
-		if np.issubdtype(np.array(set(X_df[target_name])).dtype, np.integer):	# Discrete target: startified k-fold
+		if np.issubdtype(np.array(set(X_df[target_name])).dtype, np.integer):	# Discrete target: stratified k-fold
 			cv = StratifiedKFold(n_splits=5)
 			splits = cv.split(X_df, X_df[target_name])
 			k = 5

@@ -79,7 +79,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	# Convert input data into a DataFrame format
 
 	if isinstance(X, pd.DataFrame):
-		df = X.copy()
+		df = copy.deepcopy(X)
 		if column_names is not None:
 			F = df.columns
 	elif not isinstance(X, np.ndarray):

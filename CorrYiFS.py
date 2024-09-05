@@ -9,7 +9,7 @@ from collections import Counter
 from itertools import combinations
 from sklearn.model_selection 	import	StratifiedKFold
 
-def selectFeatures(X_df, corr_method, theta_2, column_names):
+def selectFeaturesFrom(X_df, corr_method, theta_2, column_names):
 	''' 
  	This function extracts features based on correlation analysis from a given data frame without involving Cross-Validation.
  	It is called by the main function CorrYiFSCV to iterate and extract features from each CV's fold.
@@ -48,7 +48,7 @@ def selectFeatures(X_df, corr_method, theta_2, column_names):
 def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=None):
 	""" 
  	This is the main function. First, it preprocesses the given data and prepares the Cross-Validation settings, extracting the features without the CV or iterating over the splits. 
- 	It calls the above selectFeatures function to extract the features from each split. It selects the common features among all iterations.
+ 	It calls the above selectFeaturesFrom function to extract the features from each split. It selects the common features among all iterations.
 
       	The parameters are the following:
        
@@ -101,7 +101,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	
 	# Without Cross-Validation
 	if cv == 0:		
-		S = selectFeatures(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
+		S = selectFeaturesFrom(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
 		print("Optimal features %d" % len(S))
 		for f in S:
 			print(f)
@@ -143,7 +143,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	S_val					= []
 	for train_index, _ in splits:
 		X_df_fold = X_df.iloc[train_index]
-		S_fold    = selectFeatures(X_df_fold, corr_method=corr_method, theta_2=theta_2, column_names=F)
+		S_fold    = selectFeaturesFrom(X_df_fold, corr_method=corr_method, theta_2=theta_2, column_names=F)
 		S_val.append(S_fold)	
 
 	S_val = np.array([f for S_fold in S_val for f in S_fold])
@@ -151,7 +151,7 @@ def CorrYiFSCV(X, cv=None, corr_method='pearson', theta_2=0.68, column_names=Non
 	S = [cmn[0] for cmn in Counter(S_val).most_common() if cmn[1] == k]
 
 	if not S:
-		S = selectFeatures(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
+		S = selectFeaturesFrom(X_df, corr_method=corr_method, theta_2=theta_2, column_names=F)
 	
 	print("Optimal features %d" % len(S))
 	for f in S:
